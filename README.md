@@ -12,4 +12,8 @@ Managing a single resource with PowerShell is just the tip of the iceberg. With 
 
 PowerShell, a versatile and powerful scripting language, has become essential for system administrators and automation enthusiasts. Once you master PowerShell scripting, you can harness its capabilities in various domains, providing limitless possibilities for automating tasks and managing complex systems. In this session, we will explore the syntax and delve into the intangible elements that define a robust and efficient PowerShell tool.
 
+## Discussions
+
+I have enabled the [Discussions](https://github.com/jdhitsolutions/MMSMiami-2023/discussions) feature of this repository for follow-up questions or comments.
+
 > :warning: *All material is offered as-is and should be considered educational. Nothing in this repository should be considered production ready.*
