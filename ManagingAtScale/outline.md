@@ -30,11 +30,11 @@
 + Using OutVariable
 + Using PipelineVariable
 
-## Leverage Remoting
+## Leverage PowerShell Remoting
 
 + Using Temporary connections
 + Using CIM and PSSessions
-+ Remoting challenges
++ PowerShell Remoting challenges
   + Credentials
   + 2nd Hop
   + Error handling

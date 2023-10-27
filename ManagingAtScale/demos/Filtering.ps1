@@ -16,6 +16,7 @@ Get-Process -Name P* | Where-Object { $_.WS -ge 100MB }
 Get-CimInstance -ClassName Win32_Service | where { $_.StartName -like '*local*' } |
 Select-Object Name, StartName, State
 
+#better
 Get-CimInstance -ClassName Win32_Service -Filter "StartName like '%local%'" |
 Select-Object Name, StartName, State
 
@@ -26,13 +27,26 @@ Measure-Command {
     Select-Object Name, StartName, State, PSComputername
 }
 
+$a | group pscomputername
+
+#difference may not significant with this small example
 Measure-Command {
     $b = Get-CimInstance -ClassName Win32_Service -Filter "StartName like '%local%'" -ComputerName dom1, srv1, srv2, dom2, $env:Computername |
     Select-Object Name, StartName, State, PSComputername
 }
 
 #hybrid filtering as needed
-Get-Process -Name P* | Where-Object { $_.WS -ge 5 } | Select-Object ID, Name, WS
+Measure-Command {
+    Get-Process |
+    Where-Object { $_.name -like 'p*' -AND  $_.WS -ge 5 } |
+    Select-Object ID, Name, WS
+}
+
+Measure-Command {
+    Get-Process -Name P* |
+    Where-Object { $_.WS -ge 5 } |
+    Select-Object ID, Name, WS
+}
 
 Get-ChildItem c:\scripts\*.ps1 |
 Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-7) -AND $_.Name -notmatch '^dev' } |
@@ -44,24 +58,27 @@ Get-CimInstance win32_NTEventLogFile -Filter "LogFileName='Security'" -ComputerN
 Select-Object @{Name = 'ComputerName'; Expression = { $_.CSName } },
 LogFileName, FileSize, MaxFileSize, NumberOfRecords,
 @{Name = 'PctUsed'; Expression = { ($_.FileSize / $_.MaxFileSize) * 100 } } |
-Where-Object { $_.PctUsed -ge 80 }
-#984ms
+Where-Object { $_.PctUsed -ge 10 }
+#2.2 seconds
 
 #using remoting may not be faster
 $cred = Get-Credential Company\artd
+
 Invoke-Command -ScriptBlock {
     Get-CimInstance win32_NTEventLogFile -Filter "LogFileName='Security'" |
-    Where-Object { ($_.FileSize / $_.MaxFileSize) * 100 -ge 80 } |
+    Where-Object { ($_.FileSize / $_.MaxFileSize) * 100 -ge 10 } |
     Select-Object @{Name = 'ComputerName'; Expression = { $_.CSName } },
     LogFileName, FileSize, MaxFileSize, NumberOfRecords,
     @{Name = 'PctUsed'; Expression = { ($_.FileSize / $_.MaxFileSize) * 100 } }
 } -ComputerName dom1, dom2, srv1, srv2 -Credential $cred -HideComputerName |
 Select-Object -Property * -ExcludeProperty RunspaceID
 
+#using a session may be faster
 $pssess = New-PSSession -ComputerName dom1, dom2, srv1, srv2 -Credential $cred
+
 Invoke-Command -ScriptBlock {
     Get-CimInstance win32_NTEventLogFile -Filter "LogFileName='Security'" |
-    Where-Object { ($_.FileSize / $_.MaxFileSize) * 100 -ge 80 } |
+    Where-Object { ($_.FileSize / $_.MaxFileSize) * 100 -ge 10 } |
     Select-Object @{Name = 'ComputerName'; Expression = { $_.CSName } },
     LogFileName, FileSize, MaxFileSize, NumberOfRecords,
     @{Name = 'PctUsed'; Expression = { ($_.FileSize / $_.MaxFileSize) * 100 } }
@@ -71,7 +88,7 @@ Select-Object -Property * -ExcludeProperty RunspaceID
 #a variation
 Invoke-Command -ScriptBlock {
     $log = Get-CimInstance win32_NTEventLogFile -Filter "LogFileName='Security'"
-    if (($log.FileSize / $log.MaxFileSize) * 100 -ge 80) {
+    if (($log.FileSize / $log.MaxFileSize) * 100 -ge 10) {
         $log | Select-Object @{Name = 'ComputerName'; Expression = { $_.CSName } },
         LogFileName, FileSize, MaxFileSize, NumberOfRecords,
         @{Name = 'PctUsed'; Expression = { ($_.FileSize / $_.MaxFileSize) * 100 } }

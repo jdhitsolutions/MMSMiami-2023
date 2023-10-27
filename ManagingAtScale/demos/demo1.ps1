@@ -18,8 +18,9 @@ psedit .\Scaling.ps1
 #region Parallel Processing with ForEach-Object
 
 psedit .\Parallel.ps1
+
 #endregion
-#region PipelineVariable vs  OutVariable vs Tee-Object
+#region PipelineVariable vs OutVariable vs Tee-Object
 
 psedit .\PipelineVariable.ps1
 

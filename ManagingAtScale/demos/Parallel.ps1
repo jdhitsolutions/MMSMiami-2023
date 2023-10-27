@@ -1,6 +1,7 @@
 Return 'This is a demo script file'
 
 #region Sequential
+
 Measure-Command {
     $r = 'c:\work', 'c:\windows', 'C:\temp', $home |
     ForEach-Object {
@@ -14,7 +15,7 @@ Measure-Command {
         Write-Host "[$((Get-Date).TimeOfDay)] Ending $p -> $(New-TimeSpan -Start $start -End (Get-Date))" -ForegroundColor yellow
     }
 }
-#27ms
+
 #endregion
 
 #region parallel - consider the overhead
@@ -31,5 +32,5 @@ Measure-Command {
         Write-Host "[$((Get-Date).TimeOfDay)] Ending $p -> $(New-TimeSpan -Start $start -End (Get-Date))" -ForegroundColor yellow
     }
 }
-#21 ms
+
 #endregion
