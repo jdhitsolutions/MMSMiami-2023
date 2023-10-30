@@ -59,4 +59,4 @@ Measure-Command {
         }
         Write-Host "[$((Get-Date).TimeOfDay)] Finished $c" -ForegroundColor yellow
     } #foreach
-} #seconds
+} #1.3 seconds

@@ -1,15 +1,17 @@
 Return 'This is a demo script file'
 
-#region outvariable
+#region OutVariable
 Get-WinEvent -FilterHashtable @{LogName = 'System'; Level = 2 } -MaxEvents 1000 -OutVariable errLog |
 Group-Object -Property ProviderName -OutVariable go
 
 $errLog[0..4]
+$go
 $go[-1].Group
 
 #endregion
 
 #region Tee-Object
+
 Get-WinEvent -FilterHashtable @{LogName = 'System'; Level = 2 } -MaxEvents 1000 -OutVariable errLog |
 Group-Object -Property ProviderName -OutVariable go | Tee-Object -Variable r
 
@@ -19,7 +21,7 @@ $r
 
 #endregion
 
-#region pipelinevariable
+#region PipelineVariable
 
 Get-ChildItem c:\work -File -PipelineVariable source |
 Copy-Item -Destination c:\temp -PassThru -PipelineVariable dest |
@@ -32,8 +34,16 @@ ForEach-Object {
 #region putting it all together
 #this is not the only way or even the best way to accomplish this task
 
-Get-WinEvent -FilterHashtable @{LogName = 'System'; Level = 2, 3, 4 } -MaxEvents 1000 -OutVariable sysLog -PipelineVariable get |
-Group-Object -Property ProviderName -OutVariable go -PipelineVariable group | Tee-Object -Variable t |
+$splat = @{
+    FilterHashtable = @{LogName = 'System'; Level = 2, 3, 4 }
+    MaxEvents = 1000
+    OutVariable = 'sysLog'
+    PipelineVariable = 'get'
+}
+
+Get-WinEvent @splat |
+Group-Object -Property ProviderName -OutVariable go -PipelineVariable group |
+Tee-Object -Variable t |
 Select-Object -OutVariable r -property @{Name = 'LogName'; Expression = { $get.LogName } },
 Name,
 @{Name = 'TotalCount'; Expression = { $_.Count } },
@@ -47,8 +57,8 @@ Name,
 
 
 #re-use the data
-$t | sort count -Descending | Select Count,Name -first 10
-$syslog | select providername -Unique | sort providername
-$r | where InfoPct -ne 100 | format-table -GroupBy LogName -Property Name,*count,*pct
+$t | Sort-Object -Property count -Descending | Select Count,Name -first 10
+$syslog | Select-Object -Property ProviderName -Unique | Sort-Object -Property ProviderName
+$r | Where-Object InfoPct -ne 100 | Format-Table -GroupBy LogName -Property Name,*count,*pct
 
 #endregion

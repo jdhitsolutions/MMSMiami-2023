@@ -15,7 +15,7 @@ Measure-Command {
         Write-Host "[$((Get-Date).TimeOfDay)] Ending $p -> $(New-TimeSpan -Start $start -End (Get-Date))" -ForegroundColor yellow
     }
 }
-
+#41 seconds
 #endregion
 
 #region parallel - consider the overhead
@@ -32,5 +32,5 @@ Measure-Command {
         Write-Host "[$((Get-Date).TimeOfDay)] Ending $p -> $(New-TimeSpan -Start $start -End (Get-Date))" -ForegroundColor yellow
     }
 }
-
+#38ms
 #endregion

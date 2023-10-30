@@ -27,7 +27,7 @@ Measure-Command {
     Select-Object Name, StartName, State, PSComputername
 }
 
-$a | group pscomputername
+$a | group PSComputerName
 
 #difference may not significant with this small example
 Measure-Command {
@@ -53,7 +53,7 @@ Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-7) -AND $_.Name -notmatc
 Sort-Object LastWriteTime -Descending
 #Why is sorting last?
 
-#decide where it makes the most sense to filter
+#decide *where* it makes the most sense to filter
 Get-CimInstance win32_NTEventLogFile -Filter "LogFileName='Security'" -ComputerName dom1, dom2, srv1, srv2 |
 Select-Object @{Name = 'ComputerName'; Expression = { $_.CSName } },
 LogFileName, FileSize, MaxFileSize, NumberOfRecords,
@@ -64,6 +64,7 @@ Where-Object { $_.PctUsed -ge 10 }
 #using remoting may not be faster
 $cred = Get-Credential Company\artd
 
+#there is always overhead
 Invoke-Command -ScriptBlock {
     Get-CimInstance win32_NTEventLogFile -Filter "LogFileName='Security'" |
     Where-Object { ($_.FileSize / $_.MaxFileSize) * 100 -ge 10 } |
@@ -85,9 +86,10 @@ Invoke-Command -ScriptBlock {
 } -Session $pssess -HideComputerName |
 Select-Object -Property * -ExcludeProperty RunspaceID
 
-#a variation
+#a variation - Visualize the pipeline
 Invoke-Command -ScriptBlock {
     $log = Get-CimInstance win32_NTEventLogFile -Filter "LogFileName='Security'"
+
     if (($log.FileSize / $log.MaxFileSize) * 100 -ge 10) {
         $log | Select-Object @{Name = 'ComputerName'; Expression = { $_.CSName } },
         LogFileName, FileSize, MaxFileSize, NumberOfRecords,
