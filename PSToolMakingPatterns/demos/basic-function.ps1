@@ -21,5 +21,4 @@ Function Get-CimOS {
         New-Object -TypeName PSObject -Property $hash
     } #foreach item
 
-
 } #close function
