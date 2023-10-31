@@ -60,3 +60,5 @@ Measure-Command {
         Write-Host "[$((Get-Date).TimeOfDay)] Finished $c" -ForegroundColor yellow
     } #foreach
 } #1.3 seconds
+
+# show Jordan's config manager scripts

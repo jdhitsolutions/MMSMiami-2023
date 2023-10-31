@@ -8,7 +8,7 @@ function Get-ConfigMgrUpdates {
         [ValidateScript({$_ -ne $OfflinePath})]
         [System.IO.FileInfo]$DownloadPath
     )
-        
+
         if(!(Test-Path -Path $OfflinePath)){
             try{
                 New-Item -ItemType Directory -Path $OfflinePath -ErrorAction Stop | Out-Null
@@ -30,7 +30,7 @@ function Get-ConfigMgrUpdates {
                 }
             }
             catch{
-                
+
                 break
             }
         }
@@ -44,7 +44,7 @@ function Get-ConfigMgrUpdates {
             Write-Error -Message "Could not find the service connection tool"
             break
         }
-        
+
         Try{
             .\ServiceConnectionTool.exe -prepare -usagedatadest "$($OfflinePath)\usage.cab"
             Write-Verbose -Message "Completed prepare Step" -Verbose
@@ -61,7 +61,7 @@ function Get-ConfigMgrUpdates {
             Write-Output -InputObject "Completed downloading content, and likely importing"
         }
     }
-    
+
 $vms | ForEach-Object{Invoke-Command -VMName $_.Name -FilePath C:\ConfigMgrUpdates.ps1 -Credential $credential -AsJob}
 
-Get-ConfigMgrUpdates -OfflinePath C:\Offline -DownloadPath C:\Offline\Download -Verbose -_
+Get-ConfigMgrUpdates -OfflinePath C:\Offline -DownloadPath C:\Offline\Download -Verbose
