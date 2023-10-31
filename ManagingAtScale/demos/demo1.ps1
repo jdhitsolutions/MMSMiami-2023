@@ -14,7 +14,6 @@ psedit .\Filtering.ps1
 psedit .\Scaling.ps1
 
 #endregion
-
 #region Parallel Processing with ForEach-Object
 
 psedit .\Parallel.ps1

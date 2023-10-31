@@ -62,6 +62,8 @@ function Get-ConfigMgrUpdates {
         }
     }
 
-$vms | ForEach-Object{Invoke-Command -VMName $_.Name -FilePath C:\ConfigMgrUpdates.ps1 -Credential $credential -AsJob}
+$vms | ForEach-Object {
+    Invoke-Command -VMName $_.Name -FilePath C:\ConfigMgrUpdates.ps1 -Credential $credential -AsJob
+}
 
 Get-ConfigMgrUpdates -OfflinePath C:\Offline -DownloadPath C:\Offline\Download -Verbose

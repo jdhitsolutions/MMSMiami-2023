@@ -2,7 +2,7 @@ Return 'This is a demo script file'
 
 $p = Get-Process
 #the array object is a group of whatever the object is
-$p | Get-Member
+$p | Get-Member | more
 #it doesn't have its own properties and members with
 #a few exceptions
 $p.Count
@@ -11,7 +11,7 @@ $p[0]
 $p[-1]
 $p[0..4]
 #test
-$p is [array]
+$p -is [array]
 #work with saved output
 $p | sort WorkingSet -Descending | select -First 5
 #There are limitations to working with arrays
