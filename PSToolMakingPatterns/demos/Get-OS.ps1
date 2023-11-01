@@ -2,14 +2,13 @@
 Function Get-OS {
     [CmdletBinding(DefaultParameterSetName = 'ClassNameComputerSet')]
     Param(
-
         [Parameter(ParameterSetName = 'CimInstanceSessionSet', Mandatory, ValueFromPipeline)]
         [CimSession[]]$CimSession,
 
         [Parameter(Position = 0, ParameterSetName = 'ClassNameComputerSet', ValueFromPipelineByPropertyName)]
         [Alias('CN', 'ServerName')]
         [ValidateNotNullOrEmpty()]
-        [ValidatePattern("^\w+$")]
+        [ValidatePattern('^\w+$')]
         [string[]]$ComputerName = $env:computername
     )
 
@@ -17,12 +16,11 @@ Function Get-OS {
         Write-Verbose "[$((Get-Date).TimeOfDay) BEGIN  ] Starting $($MyInvocation.MyCommand)"
         Write-Verbose "[$((Get-Date).TimeOfDay) BEGIN  ] Running under PowerShell version $($PSVersionTable.PSVersion)"
         Write-Verbose "[$((Get-Date).TimeOfDay) BEGIN  ] Using PowerShell host $($host.name)"
-
         Write-Verbose "[$((Get-Date).TimeOfDay) BEGIN  ] Using parameter set $($PSCmdlet.ParameterSetName)"
-        $PSBoundParameters.Add("ClassName", "Win32_OperatingSystem")
+        $PSBoundParameters.Add('ClassName', 'Win32_OperatingSystem')
 
         $properties = 'CSName', 'Caption', 'Version', 'BuildNumber', 'InstallDate'
-        $PSBoundParameters.Add("Property", $properties)
+        $PSBoundParameters.Add('Property', $properties)
     } #begin
 
     Process {
@@ -48,7 +46,6 @@ Function Get-OS {
 
     End {
         Write-Verbose "[$((Get-Date).TimeOfDay) END    ] Ending $($MyInvocation.MyCommand)"
-
     } #end
 
 } #end function Get-OS

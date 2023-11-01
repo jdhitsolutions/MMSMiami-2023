@@ -5,7 +5,8 @@ Return 'This is a demo script file'
 $Path = 'C:\Work'
 Get-ChildItem -Path $Path -Directory -PipelineVariable pv |
 ForEach-Object {
-    Get-ChildItem -Path $_ -File -Recurse | Measure-Object -Property Length -Sum |
+    Get-ChildItem -Path $_ -File -Recurse |
+    Measure-Object -Property Length -Sum |
     Select-Object @{Name = 'Path'; Expression = { $pv.Name } }, Count, Sum
 } | Sort-Object Sum -Descending |
 ConvertTo-Html -Title 'Folder Report' -PreContent "<h1>Folder Report</h1><H2>Path: $path [$($env:ComputerName)]</H2>" -PostContent "<H5><I>Report Run $(Get-Date)</I></H5>" -Head "<style>$(Get-Content .\sample3.css)</style>" |
@@ -13,7 +14,9 @@ Out-File .\report.html
 
 Invoke-Item .\report.html
 
-Get-Service bits, winrm | Restart-Service -PassThru
+Get-Service -name bits, winrm |
+Restart-Service -PassThru |
+out-file c:\temp\restart.txt
 
 Get-Process | Stop-Process -WhatIf
 
@@ -23,6 +26,7 @@ Select-Object -Property ID, Name, StartTime,
 @{Name = 'RunTime'; Expression = { $(Get-Date) - $_.StartTime } } -First 10
 
 #endregion
+
 #region pipeline binding
 <#
 This concept applies to how you might consume command output
@@ -48,20 +52,23 @@ Get-Counter -ListSet Memory | Get-Member -MemberType Properties
 Get-Counter -ListSet Memory | Get-Counter
 
 #variation
-'C:\work', $env:Temp, $HOME | Get-ChildItem -Directory -PipelineVariable pv |
+'C:\work', $env:Temp, $HOME |
+Get-ChildItem -Directory -PipelineVariable pv |
 ForEach-Object {
     $_ | Get-ChildItem -File -Recurse |
     Measure-Object -Property Length -Sum |
     Select-Object @{Name = 'Parent'; Expression = { $pv.Parent } },
     @{Name = 'Directory'; Expression = { $pv.Name } },
     Count, Sum
-} | Where-Object { $_.Sum -ge 500KB } | Sort-Object Parent, Sum |
+} | Where-Object { $_.Sum -ge 500KB } |
+Sort-Object Parent, Sum |
 Format-Table -GroupBy Parent -Property Directory, Count,
 @{Name = 'SumKB'; Expression = { [math]::Round($_.Sum / 1KB, 4) } }
 
 # !! READ THE HELP !!
 
 #endregion
+
 #region syntax review
 
 #splatting
@@ -69,10 +76,11 @@ Get-WinEvent -LogName System -MaxEvents 10 -ComputerName $env:ComputerName -OutV
 
 $paramHash = @{
     LogName      = 'System'
-    MaxEvents    = 10
+    MaxEvents    = 20
     ComputerName = $env:ComputerName
     ErrorAction = 'Stop'
     OutVariable = 'w'
+    Verbose     = $true
 }
 
 Get-WinEvent @paramHash
