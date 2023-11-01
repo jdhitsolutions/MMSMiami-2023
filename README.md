@@ -16,8 +16,7 @@ PowerShell, a versatile and powerful scripting language, has become essential fo
 
 If you are looking to expand your PowerShell knowledge and skill set, you might consider subscribing to my premium PowerShell newsletter, *<a href="https://jeffhicks.substack.com" target="_blank">Behind the PowerShell Pipeline</a>*. If you are looking for a comprehensive book on PowerShell scripting, take a look at *<a href="https://leanpub.com/powershell-scripting-toolmaking/" target="_blank">The PowerShell Scripting and ToolMaking</a>* book available on LeanPub.
 
-To find all my other online activities, including social media, visit https://jdhitsolutions.github.io.
-
+To find all my other online activities, including social media and my premium PowerShell newsletter, visit https://jdhitsolutions.github.io.
 
 ## Discussions :information_desk_person:
 
