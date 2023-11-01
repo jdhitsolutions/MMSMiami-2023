@@ -11,13 +11,16 @@ ForEach-Object {
 ConvertTo-Html -Title 'Folder Report' -PreContent "<h1>Folder Report</h1><H2>Path: $path [$($env:ComputerName)]</H2>" -PostContent "<H5><I>Report Run $(Get-Date)</I></H5>" -Head "<style>$(Get-Content .\sample3.css)</style>" |
 Out-File .\report.html
 
+Invoke-Item .\report.html
+
 Get-Service bits, winrm | Restart-Service -PassThru
+
 Get-Process | Stop-Process -WhatIf
 
 Get-Process | Where-Object StartTime |
 Sort-Object -Property StartTime |
 Select-Object -Property ID, Name, StartTime,
-@{Name = 'RunTime'; Expression = { $(Get-Date) - $_.StartTime } } -First 20
+@{Name = 'RunTime'; Expression = { $(Get-Date) - $_.StartTime } } -First 10
 
 #endregion
 #region pipeline binding
@@ -34,20 +37,25 @@ help Get-Counter -Parameter Counter
 Get-ParameterInfo Get-Counter | select Name, Value*
 
 #ByValue
-'C:\Windows' | Get-ChildItem
+'C:\Windows' | Get-Item
 1, 4, 6, 2, 77, 3, 5 | Sort-Object -Descending
 
 #ByPropertyName
 Get-Counter -ListSet Memory
+#don't assume the output is the actual property name - verify
+Get-Counter -ListSet Memory | Get-Member -MemberType Properties
+
 Get-Counter -ListSet Memory | Get-Counter
 
 #variation
 'C:\work', $env:Temp, $HOME | Get-ChildItem -Directory -PipelineVariable pv |
 ForEach-Object {
-    $_ | Get-ChildItem -File -Recurse | Measure-Object -Property Length -Sum |
+    $_ | Get-ChildItem -File -Recurse |
+    Measure-Object -Property Length -Sum |
     Select-Object @{Name = 'Parent'; Expression = { $pv.Parent } },
-    @{Name = 'Directory'; Expression = { $pv.Name } }, Count, Sum
-} | Where-Object { $_.Sum -ge 500 } | Sort-Object Parent, Sum |
+    @{Name = 'Directory'; Expression = { $pv.Name } },
+    Count, Sum
+} | Where-Object { $_.Sum -ge 500KB } | Sort-Object Parent, Sum |
 Format-Table -GroupBy Parent -Property Directory, Count,
 @{Name = 'SumKB'; Expression = { [math]::Round($_.Sum / 1KB, 4) } }
 
@@ -57,12 +65,14 @@ Format-Table -GroupBy Parent -Property Directory, Count,
 #region syntax review
 
 #splatting
-Get-WinEvent -LogName System -MaxEvents 10 -ComputerName $env:ComputerName
+Get-WinEvent -LogName System -MaxEvents 10 -ComputerName $env:ComputerName -OutVariable w -ErrorAction Stop
 
 $paramHash = @{
     LogName      = 'System'
     MaxEvents    = 10
     ComputerName = $env:ComputerName
+    ErrorAction = 'Stop'
+    OutVariable = 'w'
 }
 
 Get-WinEvent @paramHash
@@ -98,11 +108,13 @@ psedit .\advance-function5.ps1
 #copy and paste this demo into the Win10 VM
 $pass = ConvertTo-SecureString -AsPlainText -Force -String P@ssw0rd
 $new = Get-Content c:\scripts\newusers.json | ConvertFrom-JSON
+$new.count
 $new | New-ADUser -Enabled $True -PassThru -AccountPassword $pass -ChangePasswordAtLogon $True -WhatIf
 
 #reset demo
 # $new | foreach { Remove-ADuser -Identity $_.samaccountname -confirm:$false}
 
+#demo locally
 Get-VM -PipelineVariable pv | Get-VMHardDiskDrive | Get-VHD |
 Select-Object -property  Computername,@{Name="VMName";Expression={$pv.VMName}},Path,VHDType,
 @{Name="SizeGB";Expression={$_.Size/1GB -AS [int32]}},

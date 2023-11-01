@@ -14,6 +14,8 @@ Function Get-OSInformation {
     Begin {
         Write-Verbose "[$((Get-Date).TimeOfDay) BEGIN  ] Starting $($MyInvocation.MyCommand)"
         Write-Verbose "[$((Get-Date).TimeOfDay) BEGIN  ] Running under PowerShell version $($PSVersionTable.PSVersion)"
+        Write-Verbose "[$((Get-Date).TimeOfDay) BEGIN  ] Using PowerShell host $($host.name)"
+
         $splat = @{
             ClassName    = 'Win32_OperatingSystem'
             Property     = 'CSName', 'Caption', 'Version', 'InstallDate'

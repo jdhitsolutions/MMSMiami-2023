@@ -14,8 +14,11 @@ Function Get-OS {
     )
 
     Begin {
-        Write-Verbose "[BEGIN  ] Starting $($MyInvocation.MyCommand)"
-        Write-Verbose "[BEGIN  ] Using parameter set $($PSCmdlet.ParameterSetName)"
+        Write-Verbose "[$((Get-Date).TimeOfDay) BEGIN  ] Starting $($MyInvocation.MyCommand)"
+        Write-Verbose "[$((Get-Date).TimeOfDay) BEGIN  ] Running under PowerShell version $($PSVersionTable.PSVersion)"
+        Write-Verbose "[$((Get-Date).TimeOfDay) BEGIN  ] Using PowerShell host $($host.name)"
+
+        Write-Verbose "[$((Get-Date).TimeOfDay) BEGIN  ] Using parameter set $($PSCmdlet.ParameterSetName)"
         $PSBoundParameters.Add("ClassName", "Win32_OperatingSystem")
 
         $properties = 'CSName', 'Caption', 'Version', 'BuildNumber', 'InstallDate'
@@ -24,7 +27,7 @@ Function Get-OS {
 
     Process {
         Write-Verbose ($PSBoundParameters | Out-String)
-        Write-Verbose "[PROCESS] Getting operating system with Get-CimInstance"
+        Write-Verbose "[$((Get-Date).TimeOfDay) PROCESS] Getting operating system with Get-CimInstance"
         Try {
             $data = Get-CimInstance @PSBoundParameters -ErrorAction stop
             foreach ($os in $data) {
@@ -44,7 +47,7 @@ Function Get-OS {
     } #process
 
     End {
-        Write-Verbose "[END    ] Ending $($MyInvocation.MyCommand)"
+        Write-Verbose "[$((Get-Date).TimeOfDay) END    ] Ending $($MyInvocation.MyCommand)"
 
     } #end
 
